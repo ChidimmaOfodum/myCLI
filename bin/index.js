@@ -1,27 +1,6 @@
-#!/usr/bin/env node
-import yargs from "yargs";
-import chalk from "chalk";
-import boxen from "boxen";
-import { hideBin } from "yargs/helpers";
-
-const args = yargs(hideBin(process.argv));
-
-function usageFunction(yargs) {
-
-  if (!(args.argv.language || args.argv.sentence || args.argv.list)) {
-    const pink = chalk.hex("#FF007f");
-    const usage = pink(`Usage: mycli -l <language> -s<sentence>`);
-
-    let description = chalk.green(
-      `Translates a sentence to a specific language`
-    );
-    description = boxen(description, { padding: 1, borderColor: "green" });
-
-    const message = `\n${usage} \n \n${description} \n \n \n`;
-    console.log(message);
-    console.log(yargs.parse("--help"))
-  }
-}
+import { usageFunction } from "./options.js";
+import { countries } from "./countries.js";
+import { args } from "./options.js";
 
 const options = args
   .usage("$0", "", usageFunction)
@@ -44,30 +23,8 @@ const options = args
     describe: "Sentence to be translated",
     type: "string",
     demandOption: false,
-  })
-  
-  .argv;
+  }).argv;
 
-const countries = {
-  English: "en",
-  Spanish: "es",
-  French: "fr",
-  German: "de",
-  Italian: "it",
-  Portuguese: "pt",
-  Russian: "ru",
-  Chinese: "zh",
-  Japanese: "ja",
-  Korean: "ko",
-  Arabic: "ar",
-  Hindi: "hi",
-  Bengali: "bn",
-  Punjabi: "pa",
-  Malay: "ms",
-  Thai: "th",
-  Vietnamese: "vi",
-  Indonesian: "id",
-};
 
 if (options.list) {
   let result = "";
@@ -94,14 +51,14 @@ if (options.language) {
         const url = `https://api.mymemory.translated.net/get?q=${options.sentence}&langpair=en|${countryCode}`;
 
         fetch(url)
-        .then((res) => res.json())
-        .then(data => {
-          const {responseData} = data
+          .then((res) => res.json())
+          .then((data) => {
+            const { responseData } = data;
 
-           let translatedText = responseData.translatedText
-           translatedText = chalk.green(
-             `${options.sentence}\n \n${translatedText}`
-           );
+            let translatedText = responseData.translatedText;
+            translatedText = chalk.green(
+              `${options.sentence}\n \n${translatedText}`
+            );
 
             console.log(
               boxen(translatedText, {
@@ -110,9 +67,8 @@ if (options.language) {
                 dimBorder: true,
               })
             );
-        })
+          });
       }
     }
   }
 }
-
